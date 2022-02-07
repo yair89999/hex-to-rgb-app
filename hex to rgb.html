@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            input {
+                transition-duration: 0.2s;
+                font-size: 30px;
+                position: relative;left: 50%;
+                transform: TranslateX(-50%);
+                border: 2px solid #000;
+                border-radius: 2px;
+            }
+            input:hover {
+                border: 2px solid #7AC5CD;
+            }
+            input:focus {
+                background: rgba(122,197,205,0.5);
+            }
+            button {
+                font-size: 30px;
+                position: relative;left: 50%;
+                transform: TranslateX(-50%);
+                border-radius: 100px;
+                border: 2px solid #98F5FF;
+                background: rgb(200,200,200);
+                padding: 10px;
+            }
+            button:hover {
+                background: rgb(200,220,255);
+            }
+            button:active {
+                background: rgb(0,0,255);
+                color: #fff;
+            }
+            a {
+                font-size: 20px;
+                background: #fff;
+                border-radius: 100px;
+                padding: 10px;
+            }
+            body {
+                transition-duration: 0.5s; /* for the changing between colors will be smooth */
+            }
+        </style>
+    </head>
+    <body id="body">
+        <h1 style="text-align: center;">Hex to rgb web</h1>
+        <p> <input id="hex" type="text" placeholder="Enter hex number" value="#"> </p>
+        <button onclick="transform_to_RGB()">Transform</button>
+        <p style="text-align: center;"> <a id="answer" style="text-align: center;"></a> </p>
+        <script>
+            var strings = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+            function return_letter_value(letter){ // returns the value of the letter
+                var number = strings.indexOf(letter)
+                if (number == -1){ // if the letter/number doesnt exist in hex format
+                    document.getElementById("answer").innerHTML = "Hex numbers contain illegal character"
+                    document.getElementById("answer").style.color = "#f00" // changes the color
+                    console.log("Hex numbers contain illegal character")
+                }
+                return number
+            }
+            function divide_to_3(string){ // gets a string and divide it to 3 lists of 2
+                // gets a string and divide it to lists of 2
+                // split_to is spliting the string to
+                var list_hex = []
+                for (var character of string){list_hex.push(character)} 
+                const split_to = (arr, size) => arr.reduce((acc, e, i) => (i % size ? acc[acc.length - 1].push(e) : acc.push([e]), acc), []);
+                var hex_divides_to_3 = split_to(list_hex,2)
+                return hex_divides_to_3
+            }
+            function make_hex_RGB(hex){ // gets a list with 3 lists, each list is 2 long and returns the RGB value
+                // gets a list with lists of 2 and returns a string with the final RGB that looks like this: (100,100,100) 
+                var returning = "("
+                for (var two_characters of hex){
+                    var index = 0
+                    var final_num = 0
+                    for (var character of two_characters){ // gets the final number of the 2
+                        if (index == 0){// first number
+                            final_num += return_letter_value(character) * 16 // to get the first number you have to multiply the hex value by 16
+                        } else { // second number
+                            final_num += return_letter_value(character)
+                        }
+                        index += 1
+                    }
+                    returning += final_num.toString() + ","
+                }
+                returning = returning.slice(0,-1) // removes the , from the end(gets the string without the last character)
+                returning += ")"
+                return returning
+            }
+            function transform_to_RGB(){ // combine all of the other functions, gets a hex color in this format: "#ffffff" and returns rgb in this format rgb(100,100,100)
+                var hex = document.getElementById("hex").value
+                console.log("Start hex: " + hex)
+                new_hex = ""
+                for (character of hex){ if (character != "#"){new_hex += character}}
+                hex = new_hex
+                if (hex.length != 6 && hex.length != 3){ // if the hex num is in illegal long
+                    document.getElementById("answer").innerHTML = "Hex number long must be 6/3"
+                    document.getElementById("answer").style.color = "#f00" // changes the color
+                    console.log("Hex is too long/short", hex.length)
+                    if (hex.length == 0){
+                        document.getElementById("hex").value = "#"
+                    }
+                    return 
+                } else if (hex.length == 3){ // if the length is 3 it makes the length 6
+                    new_hex = ""
+                    for (var char of hex){
+                        for (var i = 0; i < 2; i++){ new_hex += char}
+                    }
+                    hex = new_hex
+                    document.getElementById("hex").value = "#"+hex.toUpperCase() // makes the input value to be 6 long
+                    document.getElementById("answer").style.color = "#000" // changes the color
+                }
+
+                console.log("to 6 long hex: "+hex)
+                hex = hex.toLowerCase() // make the hex number to lower case
+                
+                var hex_divides_to_3 = divide_to_3(hex)
+                console.log("hex divide to 3",hex_divides_to_3)
+                var RGB = make_hex_RGB(hex_divides_to_3) // [num1,num2,num3]
+                if (document.getElementById("answer").innerHTML != "Hex numbers contain illegal character"){
+                    document.getElementById("answer").innerHTML = "RGB"+RGB
+                    document.getElementById("answer").style.color = "#"+hex // changes the color
+                }
+                document.getElementById("body").style.backgroundColor = "#" + hex
+                console.log("RBG: " + RGB)
+                }
+        </script>
+    </body>
+</html>
